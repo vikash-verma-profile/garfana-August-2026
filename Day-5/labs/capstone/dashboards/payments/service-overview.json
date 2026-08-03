@@ -1,0 +1,47 @@
+{
+  "uid": "payments-overview",
+  "title": "Payments · Service Overview (RED)",
+  "tags": ["capstone", "payments"],
+  "schemaVersion": 39,
+  "version": 1,
+  "id": null,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "description": "RED-style overview. Replace stand-in queries with your app metrics (http_requests_total, duration histogram).",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Rate (stand-in: scrape success)",
+      "id": 1,
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prom-main" },
+      "targets": [{ "expr": "sum(rate(up[5m]))", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Errors (stand-in: targets down)",
+      "id": 2,
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prom-main" },
+      "targets": [{ "expr": "count(up == 0) OR on() vector(0)", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Duration proxy (scrape duration seconds)",
+      "id": 3,
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "prom-main" },
+      "fieldConfig": {
+        "defaults": { "unit": "s" },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "scrape_duration_seconds",
+          "legendFormat": "{{job}} {{instance}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

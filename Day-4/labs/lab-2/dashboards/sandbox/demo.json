@@ -1,0 +1,29 @@
+{
+  "uid": "day4-sandbox-demo",
+  "title": "Sandbox · Demo Board",
+  "tags": ["day4", "sandbox"],
+  "schemaVersion": 39,
+  "version": 1,
+  "id": null,
+  "timezone": "browser",
+  "refresh": "1m",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "targets": [
+        {
+          "expr": "up",
+          "legendFormat": "{{job}} / {{instance}}",
+          "refId": "A"
+        }
+      ],
+      "title": "All Targets Up",
+      "type": "timeseries"
+    }
+  ],
+  "templating": { "list": [] },
+  "annotations": { "list": [] }
+}

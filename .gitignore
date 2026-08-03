@@ -1,0 +1,8 @@
+# Lab artifacts - do not commit secrets or local state
+**/certs/*.pem
+**/backups/
+**/terraform/.terraform/
+**/terraform/*.tfstate*
+**/terraform/terraform.tfvars
+**/.terraform.lock.hcl
+**/_pptx_extract/

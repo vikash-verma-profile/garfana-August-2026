@@ -1,0 +1,35 @@
+{
+  "uid": "capstone-node",
+  "title": "Capstone · Host Health",
+  "tags": ["capstone", "day4"],
+  "schemaVersion": 39,
+  "version": 1,
+  "id": null,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "max": 100,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "maxDataPoints": 800,
+      "targets": [
+        {
+          "expr": "sum by (instance) (rate(node_cpu_seconds_total{mode!=\"idle\"}[$__rate_interval])) * 100",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU (aggregated)",
+      "type": "timeseries"
+    }
+  ]
+}

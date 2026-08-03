@@ -1,0 +1,23 @@
+{
+  "uid": "log-errors",
+  "title": "Platform · Error Signals",
+  "tags": ["capstone", "logs"],
+  "schemaVersion": 39,
+  "version": 1,
+  "id": null,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "description": "Without Loki in the base lab, this board uses Prometheus error proxies. Swap to LogQL when Loki is available.",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Target up/down",
+      "id": 1,
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prom-main" },
+      "targets": [
+        { "expr": "up", "legendFormat": "{{job}} {{instance}}", "refId": "A" }
+      ]
+    }
+  ]
+}

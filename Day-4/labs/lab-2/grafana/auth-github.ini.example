@@ -1,0 +1,23 @@
+# Example only - do not commit real client secrets.
+# Mount or merge into grafana.ini after registering a GitHub OAuth App.
+# Callback URL: http://localhost:3000/login/github
+
+[auth.github]
+enabled = true
+client_id = YOUR_CLIENT_ID
+client_secret = YOUR_CLIENT_SECRET
+scopes = user:email,read:org
+auth_url = https://github.com/login/oauth/authorize
+token_url = https://github.com/login/oauth/access_token
+api_url = https://api.github.com/user
+allowed_organizations = your-github-org
+allow_sign_up = true
+role_attribute_path = contains(groups[*], '@your-github-org/platform') && 'Admin' || 'Viewer'
+
+[users]
+allow_sign_up = false
+auto_assign_org = true
+auto_assign_org_role = Viewer
+
+[auth]
+disable_login_form = false

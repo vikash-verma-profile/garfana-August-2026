@@ -1,0 +1,32 @@
+{
+  "uid": "payments-latency",
+  "title": "Payments · Latency SLO",
+  "tags": ["provisioned", "payments", "day5"],
+  "schemaVersion": 39,
+  "version": 1,
+  "id": null,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Targets Up (stand-in SLO panel)",
+      "id": 1,
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prom-lab2" },
+      "targets": [
+        { "expr": "count(up == 1)", "refId": "A" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Scrape health",
+      "id": 2,
+      "gridPos": { "h": 8, "w": 16, "x": 8, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prom-lab2" },
+      "targets": [
+        { "expr": "up", "legendFormat": "{{job}} {{instance}}", "refId": "A" }
+      ]
+    }
+  ]
+}

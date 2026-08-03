@@ -1,0 +1,26 @@
+{
+  "uid": "tf-lab-dash",
+  "title": "TF Lab Dashboard",
+  "tags": ["terraform", "day5"],
+  "schemaVersion": 39,
+  "version": 1,
+  "id": null,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "up",
+      "id": 1,
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prom-tf" },
+      "targets": [
+        {
+          "expr": "up",
+          "legendFormat": "{{job}} {{instance}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

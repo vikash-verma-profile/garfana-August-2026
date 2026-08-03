@@ -1,0 +1,29 @@
+{
+  "dashboard": {
+    "uid": "lab-api-1",
+    "title": "Built by API",
+    "tags": ["day5", "api"],
+    "schemaVersion": 39,
+    "version": 0,
+    "refresh": "1m",
+    "time": { "from": "now-1h", "to": "now" },
+    "panels": [
+      {
+        "type": "timeseries",
+        "title": "up",
+        "id": 1,
+        "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+        "datasource": { "type": "prometheus", "uid": "prom-lab" },
+        "targets": [
+          {
+            "expr": "up",
+            "refId": "A"
+          }
+        ]
+      }
+    ]
+  },
+  "folderUid": "lab-api",
+  "message": "via API lab v1",
+  "overwrite": true
+}

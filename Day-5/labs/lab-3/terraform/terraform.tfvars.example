@@ -1,0 +1,4 @@
+# Local overrides - DO NOT COMMIT real tokens
+# Copy to terraform.tfvars (already gitignored pattern) if not using env vars:
+# grafana_url  = "http://localhost:3000"
+# grafana_auth = "glsa_xxx"

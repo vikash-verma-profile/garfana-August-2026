@@ -1,0 +1,58 @@
+# Day 5 Lab 4 - Grafana behind Nginx TLS + Prometheus scrape of Grafana metrics
+services:
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    expose:
+      - "3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=https://localhost/
+      - GF_SERVER_DOMAIN=localhost
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_METRICS_ENABLED=true
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: grafana-nginx
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx/grafana.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - grafana
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=15d
+    restart: unless-stopped
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+    pid: host
+    restart: unless-stopped
+
+volumes:
+  grafana-data:

@@ -1,0 +1,5 @@
+apiVersion: 1
+
+# No data sources yetPrometheus is connected in Day 2.
+# Keep this file so Grafana's provisioning path is valid.
+datasources: []
