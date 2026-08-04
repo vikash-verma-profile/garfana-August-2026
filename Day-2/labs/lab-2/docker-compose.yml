@@ -1,4 +1,5 @@
-# Optional Lab 2 stack - same services as Lab 1 + provisioned sample dashboard.
+# Optional Lab 2 stack — same core services as Lab 1 + provisioned sample dashboard.
+# Prefer Lab 1 stack for the full Day 2 environment (includes Loki + demo-api).
 # Stop Lab 1 first: cd ../lab-1 && docker compose down
 services:
   grafana:
@@ -64,6 +65,13 @@ services:
       DATA_SOURCE_NAME: postgresql://grafana:grafana@postgres:5432/demo?sslmode=disable
     depends_on:
       - postgres
+    restart: unless-stopped
+
+  demo-api:
+    build: ../lab-1/demo-api
+    container_name: demo-api
+    ports:
+      - "8080:8080"
     restart: unless-stopped
 
 volumes:

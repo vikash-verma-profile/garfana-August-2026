@@ -1,12 +1,12 @@
-# Lab 2 - Service Health Dashboard
+# Lab 2 — Service Health Dashboard
 
 Start here: **[STEPS.md](STEPS.md)**
 
-Depends on Lab 1 stack running (`docker compose up -d` in `../lab-1`).
+Depends on Lab 1 stack:
 
-Optional: start this folder’s Compose if you want a starter/provisioned sample dashboard:
-
-```bash
-# Stop lab-1 first if ports conflict, or continue using lab-1 only
-docker compose up -d
+```powershell
+cd c:\Users\admin\Desktop\grafana\Day-2\labs\lab-1
+docker compose up -d --build
 ```
+
+Optional: this folder’s Compose provisions a sample `Day 2 - Service Health` dashboard — stop Lab 1 first if ports conflict.

@@ -27,3 +27,12 @@ datasources:
       timescaledb: false
     secureJsonData:
       password: grafana
+
+  - name: Loki
+    uid: loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: true
+    jsonData:
+      maxLines: 1000

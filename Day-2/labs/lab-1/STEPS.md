@@ -1,8 +1,9 @@
-# Lab 1 - Observability Stack & Data Sources
+# Lab 1 — Data Sources (Prometheus, PostgreSQL, Loki)
 
-**Course:** Grafana Monitoring & Observability - Day 2  
-**Modules:** Working with Data Sources + Prometheus Integration (Hands-on)  
-**Duration:** ~45–60 minutes  
+**Course:** Grafana Monitoring & Observability — Day 2  
+**Modules:** Working with Data Sources + Prometheus Integration  
+**Source:** Day-2.pptx — Hands-on Lab 1 (slides 12–13)  
+**Duration:** ~30–45 minutes  
 **Format:** Work individually or in pairs
 
 ---
@@ -11,11 +12,11 @@
 
 By the end of this lab you will be able to:
 
-1. Start the Day-2 Docker Compose stack (Grafana, Prometheus, node_exporter, PostgreSQL, postgres_exporter)
-2. Verify Prometheus is scraping targets (`UP` in Status → Targets)
-3. Add (or confirm) the **Prometheus** data source in Grafana and Save & test
-4. Add (or confirm) the **PostgreSQL** data source and Save & test
-5. Run first PromQL and SQL checks in **Explore**
+1. Start the Day-2 Docker Compose stack (Grafana, Prometheus, node_exporter, PostgreSQL, postgres_exporter, Loki, Promtail, demo-api)
+2. Add **Prometheus**, **PostgreSQL**, and **Loki** data sources and get Save & test green
+3. Verify Prometheus targets (`node` UP) in the Prometheus UI
+4. Run a SQL table query against `orders`
+5. Run LogQL `{job="node"}` and a PromQL range query for `http_requests_total`
 
 ---
 
@@ -24,7 +25,8 @@ By the end of this lab you will be able to:
 | Requirement | Notes |
 |---|---|
 | Day 1 complete | Comfortable with Grafana UI, Explore, Docker Compose |
-| Ports free | **3000**, **9090**, **9100**, **9187**, **5432** |
+| Docker Desktop | Running (Windows/macOS/Linux) |
+| Ports free | **3000**, **9090**, **9100**, **9187**, **5432**, **3100**, **8080** |
 | Files | This folder: `labs/lab-1/` |
 | Stop Day-1 stack | If Day-1 Grafana is still running: `docker compose down` in Day-1 lab folders |
 
@@ -34,27 +36,22 @@ By the end of this lab you will be able to:
 
 ```
 Browser → Grafana :3000
-            ├── Prometheus DS  → Prometheus :9090  ← scrape ← node_exporter :9100
-            │                                      ← scrape ← postgres_exporter :9187
-            └── PostgreSQL DS  → PostgreSQL :5432 (demo DB: orders, api_requests)
+            ├── Prometheus DS  → Prometheus :9090
+            │                      ← scrape ← node_exporter :9100
+            │                      ← scrape ← postgres_exporter :9187
+            │                      ← scrape ← demo-api :8080  (http_requests_total)
+            ├── PostgreSQL DS  → PostgreSQL :5432 (db: demo)
+            └── Loki DS        → Loki :3100 ← Promtail ← demo-api / node logs (job=node)
 ```
 
-Grafana queries data sources **at render time**. It does not store Prometheus samples.
+Grafana queries data sources **at render time**. It does not store Prometheus samples or Loki log lines.
 
 ---
 
-## Step 1 - Stop conflicting containers
-
-If a Grafana container from Day 1 is still using port 3000 / name `grafana`:
-
-```bash
-# From Day-1 lab folder(s)
-docker compose down
-```
-
-Windows PowerShell example:
+## Step 1 — Stop conflicting containers
 
 ```powershell
+# Day-1 examples (adjust paths if needed)
 cd c:\Users\admin\Desktop\grafana\Day-1\labs\lab-1
 docker compose down
 cd c:\Users\admin\Desktop\grafana\Day-1\labs\lab-2
@@ -63,126 +60,106 @@ docker compose down
 
 ---
 
-## Step 2 - Review the Compose stack
+## Step 2 — Review the Compose stack
 
 Open `docker-compose.yml`. Services:
 
-| Service | Image / Role |
+| Service | Role |
 |---|---|
-| `grafana` | UI + provisioning mounts |
+| `grafana` | UI + optional provisioning |
 | `prometheus` | TSDB, scrapes exporters every 15s |
 | `node-exporter` | Host / container CPU, memory, disk metrics |
-| `postgres` | Demo DB with seed data (`init.sql`) |
-| `postgres-exporter` | Exposes Postgres metrics for Prometheus |
+| `postgres` | Demo DB (`orders`, `api_requests`, `regions`) |
+| `postgres-exporter` | Postgres metrics for Prometheus |
+| `demo-api` | Exposes `http_requests_total` + JSON logs |
+| `loki` | Log store |
+| `promtail` | Ships container logs to Loki with `job=node` |
 
-Open `prometheus/prometheus.yml` and confirm scrape jobs: `prometheus`, `node`, `postgres`, `grafana`.
-
-Open `postgres/init.sql` and note tables `orders` and `api_requests` used by SQL panels later.
+Open `prometheus/prometheus.yml` and confirm scrape jobs: `prometheus`, `node`, `postgres`, `grafana`, `demo-api`.
 
 ---
 
-## Step 3 - Bring the stack up
-
-```bash
-cd labs/lab-1
-```
-
-Windows:
+## Step 3 — Bring the stack up
 
 ```powershell
 cd c:\Users\admin\Desktop\grafana\Day-2\labs\lab-1
-```
-
-```bash
-docker compose up -d
+docker compose up -d --build
 docker compose ps
 ```
 
-**Expected:** all five services `Up` (postgres healthy).
+**Expected:** all services `Up` (postgres healthy). First build of `demo-api` may take a minute.
 
-Follow Grafana logs briefly:
-
-```bash
+```powershell
 docker compose logs -f grafana
 ```
 
 Press `Ctrl+C` when healthy.
 
-**Troubleshooting:**
-
 | Symptom | Fix |
 |---|---|
 | Port already allocated | Stop the process using that port, or tell the instructor before editing Compose |
-| Postgres never healthy | `docker compose logs postgres` - often a leftover volume with wrong password; `docker compose down -v` then `up -d` |
-| Image pull timeout | Check network; retry `docker compose pull` |
+| Postgres never healthy | `docker compose logs postgres` — leftover volume: `docker compose down -v` then `up -d --build` |
+| Missing `regions` table (Lab 3 Geomap) | Existing volume skipped `init.sql`. Run: `Get-Content postgres\migrate-regions.sql \| docker exec -i postgres psql -U grafana -d demo` |
+| demo-api build fails | Check Docker Desktop is running; retry `docker compose build demo-api` |
+| Loki / Promtail unhealthy | `docker compose logs loki promtail` |
+| Prometheus missing `demo-api` target | After editing `prometheus.yml` on a running stack: `Invoke-WebRequest -Method Post http://localhost:9090/-/reload` |
 
 ---
 
-## Step 4 - Verify Prometheus targets
+## Step 4 — Task 1: Add Prometheus data source
+
+> Deck checkpoint: Save & test returns green
+
+This folder also **provisions** Prometheus automatically. Still perform the UI path once.
+
+1. Open [http://localhost:3000](http://localhost:3000) — login `admin` / `admin`
+2. **Connections → Data sources → Add data source → Prometheus**  
+   (or open the existing **Prometheus** entry if already listed)
+3. Set:
+
+| Field | Value |
+|---|---|
+| URL | `http://prometheus:9090` |
+| Scrape interval | `15s` |
+
+4. Click **Save & test**
+
+> Use the Docker **service name** `prometheus`, not `localhost`, when Grafana runs inside Compose.
+
+**Checkpoint:** message like *Successfully queried the Prometheus API*.
+
+---
+
+## Step 5 — Task 2: Inspect Prometheus targets
+
+> Deck checkpoint: node exporter target is UP
 
 1. Open [http://localhost:9090](http://localhost:9090)
 2. Go to **Status → Targets**
-3. Confirm jobs `node`, `postgres`, `prometheus` show state **UP**
+3. Read `job` and `instance` labels
+4. Note last scrape duration and any **DOWN** targets
 
-Optional PromQL in the Prometheus UI Graph tab:
+Confirm at least:
+
+| Job | Expected |
+|---|---|
+| `node` | **UP** |
+| `demo-api` | **UP** |
+| `postgres` | **UP** |
+
+Optional PromQL in the Prometheus Graph tab:
 
 ```promql
 up
 ```
 
-```promql
-node_memory_MemAvailable_bytes
-```
-
-**Checkpoint:** At least `node` and `postgres` are UP. If DOWN, check `docker compose ps` and the **Error** column on the Targets page.
+**Checkpoint:** `node` is UP. If DOWN, check `docker compose ps` and the Error column on Targets.
 
 ---
 
-## Step 5 - First login to Grafana
+## Step 6 — Task 3: Add PostgreSQL data source
 
-1. Open [http://localhost:3000](http://localhost:3000)
-2. Login: `admin` / `admin` (change password if prompted - training may keep it simple)
-
-Optional health check:
-
-```powershell
-Invoke-RestMethod http://localhost:3000/api/health
-```
-
----
-
-## Step 6 - Configure Prometheus data source (UI walkthrough)
-
-This folder also **provisions** Prometheus automatically. Still perform the UI path once so you practice Module 5 skills.
-
-### If already provisioned
-
-1. **Connections → Data sources → Prometheus**
-2. Confirm URL `http://prometheus:9090`
-3. Click **Save & test**
-4. Expect: *Successfully queried the Prometheus API* (wording varies)
-
-### If adding manually
-
-1. **Connections → Data sources → Add data source → Prometheus**
-2. **URL:** `http://prometheus:9090`  
-   > Use the **Docker service name** `prometheus`, not `localhost`, when Grafana runs inside Compose.
-3. **Scrape interval / HTTP method:** 15s / POST (optional)
-4. **Save & test**
-
-**Checkpoint (deck task 1):** Prometheus API queried successfully.
-
----
-
-## Step 7 - Configure PostgreSQL data source
-
-### If already provisioned
-
-1. Open **PostgreSQL** data source
-2. Confirm Host `postgres:5432`, Database `demo`, User `grafana`, TLS/SSL **disable**
-3. **Save & test** → database connection OK
-
-### If adding manually
+> Deck checkpoint: table panel / Explore returns rows
 
 | Field | Value |
 |---|---|
@@ -192,36 +169,11 @@ This folder also **provisions** Prometheus automatically. Still perform the UI p
 | Password | `grafana` |
 | TLS/SSL Mode | `disable` |
 
-**Checkpoint (deck task 2):** Database connection OK.
+> The deck sometimes shows `db:5432` / `appdb`. This lab stack uses **`postgres:5432`** / **`demo`** (same as the Lab 2 environment slide).
 
-> Production reminder from the deck: always use a **read-only** DB user and require TLS.
-
----
-
-## Step 8 - Smoke-test both sources in Explore
-
-### Prometheus
-
-1. Open **Explore**
-2. Data source: **Prometheus**
-3. Run:
-
-```promql
-up{job="node"}
-```
-
-4. Switch to range view if needed; time range **Last 15 minutes**
-5. Also try:
-
-```promql
-rate(node_cpu_seconds_total{mode="idle"}[5m])
-```
-
-### PostgreSQL
-
-1. Stay in Explore; switch data source to **PostgreSQL**
-2. Format as **Table**
-3. Run:
+1. **Connections → Data sources → Add → PostgreSQL** (or open provisioned entry)
+2. Fill the table above → **Save & test**
+3. Open **Explore** → data source **PostgreSQL** → Format as **Table**:
 
 ```sql
 SELECT status, COUNT(*) AS orders
@@ -230,41 +182,97 @@ GROUP BY status
 ORDER BY orders DESC;
 ```
 
-4. Then a time-series oriented query:
+**Checkpoint:** rows return (pending / paid / shipped / cancelled).
 
-```sql
-SELECT
-  $__timeGroup(created_at, '5m') AS time,
-  status AS metric,
-  COUNT(*) AS value
-FROM orders
-WHERE $__timeFilter(created_at)
-GROUP BY 1, 2
-ORDER BY 1;
+Production reminder from the deck: always use a **read-only** DB user and require TLS.
+
+---
+
+## Step 7 — Task 4: Add Loki data source
+
+> Deck checkpoint: logs render for `{job="node"}`
+
+1. **Connections → Data sources → Add → Loki** (or open provisioned entry)
+2. **URL:** `http://loki:3100`
+3. **Save & test**
+4. Open **Explore** → data source **Loki**
+5. Run LogQL:
+
+```logql
+{job="node"}
 ```
 
-**Checkpoint:** Both Explore queries return data without errors.
+Optional filters:
+
+```logql
+{job="node"} |= "error"
+```
+
+```logql
+{job="node"} | json | level="error"
+```
+
+Wait ~30–60s after stack start if no lines yet (Promtail + self-traffic need a moment).
+
+**Checkpoint:** log lines render for `job="node"`.
 
 ---
 
-## Step 9 - Cardinality & scrape hygiene (theory drill)
+## Step 8 — Task 5: Query time series (instant vs range)
 
-Answer briefly (use Targets + Explore as evidence):
+> Deck checkpoint: range query graphs multiple series
 
-1. What does `up{job="node"} == 0` tell you?
-2. Why wrap counters in `rate()` instead of graphing raw counters?
-3. Why must Grafana use `http://prometheus:9090` inside Docker, not `localhost:9090`?
+1. **Explore** → data source **Prometheus**
+2. Run:
+
+```promql
+rate(http_requests_total[5m])
+```
+
+3. Toggle **Instant** vs **Range** (Range draws a line over time; Instant is one value per series — use Instant for Stat/Gauge later)
+4. Group:
+
+```promql
+sum by (instance) (rate(http_requests_total[5m]))
+```
+
+Also try status grouping:
+
+```promql
+sum by (status) (rate(http_requests_total[5m]))
+```
+
+Time range: **Last 15 minutes**.
+
+Generate extra traffic if you want:
+
+```powershell
+1..20 | ForEach-Object { Invoke-WebRequest http://localhost:8080/api -UseBasicParsing | Out-Null }
+```
+
+**Checkpoint:** range query graphs series (multiple status/path combinations or grouped by instance).
 
 ---
 
-## Success criteria checklist
+## Step 9 — Optional: one dashboard with metrics + logs
 
-- [ ] `docker compose ps` shows grafana, prometheus, node-exporter, postgres, postgres-exporter Up
-- [ ] Prometheus Targets: `node` and `postgres` are UP
-- [ ] Prometheus data source Save & test succeeds
-- [ ] PostgreSQL data source Save & test succeeds
-- [ ] Explore returns series for `up{job="node"}`
-- [ ] Explore SQL against `orders` returns rows
+1. **Dashboards → New → New dashboard**
+2. Add a **Time series** panel with `rate(http_requests_total[5m])`
+3. Add a **Logs** panel with `{job="node"}`
+4. Save as `Day 2 - Metrics and Logs` in folder `Training` (create folder if needed)
+
+This satisfies the deck “Done when… One dashboard queries metrics and logs”.
+
+---
+
+## Success criteria checklist (from the deck)
+
+- [ ] All three data sources Save & test green (Prometheus, PostgreSQL, Loki)
+- [ ] Targets page shows jobs UP (`node` required; prefer all UP)
+- [ ] SQL on `orders` returns rows
+- [ ] `{job="node"}` returns logs
+- [ ] Range query on `http_requests_total` returns series
+- [ ] Data source names noted for Labs 2–3 (`Prometheus`, `PostgreSQL`, `Loki`)
 
 ---
 
@@ -274,22 +282,26 @@ Answer briefly (use Targets + Explore as evidence):
 |---|---|
 | `docker-compose.yml` | Full Day-2 stack |
 | `prometheus/prometheus.yml` | Scrape configs |
-| `postgres/init.sql` | Demo tables + seed data |
-| `provisioning/datasources/datasources.yml` | Optional auto-provision of both DSs |
+| `postgres/init.sql` | Demo tables + seed data (first boot) |
+| `postgres/migrate-regions.sql` | Add `regions` / `orders.region` on existing volumes |
+| `loki/loki-config.yml` | Single-node Loki |
+| `promtail/promtail-config.yml` | Ships demo-api logs as `job=node` |
+| `demo-api/` | Tiny HTTP app + `/metrics` (`http_requests_total`) |
+| `provisioning/datasources/datasources.yml` | Optional auto-provision of all three DSs |
 
 ---
 
 ## Cleanup / handoff
 
-Keep the stack running for Lab 2:
+**Keep the stack running** for Lab 2 and Lab 3:
 
-```bash
+```powershell
 docker compose ps
 ```
 
 Full reset:
 
-```bash
+```powershell
 docker compose down -v
 ```
 
@@ -297,4 +309,4 @@ docker compose down -v
 
 ## Next lab
 
-Continue with **[Lab 2 - Service Health Dashboard](../lab-2/STEPS.md)** using this same running stack.
+Continue with **[Lab 2 — Service Health Dashboard](../lab-2/STEPS.md)** using this same running stack.
