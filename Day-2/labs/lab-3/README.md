@@ -1,4 +1,4 @@
-# Lab 3 — Host Health Visualizations
+# Lab 3 - Host Health Visualizations
 
 Start here: **[STEPS.md](STEPS.md)**
 

@@ -21,7 +21,7 @@ scrape_configs:
     static_configs:
       - targets: ["grafana:3000"]
 
-  # Demo API — used for rate(http_requests_total[5m]) in Lab 1 Task 5
+  # Demo API - used for rate(http_requests_total[5m]) in Lab 1 Task 5
   - job_name: demo-api
     static_configs:
       - targets: ["demo-api:8080"]

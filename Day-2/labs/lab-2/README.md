@@ -1,4 +1,4 @@
-# Lab 2 — Service Health Dashboard
+# Lab 2 - Service Health Dashboard
 
 Start here: **[STEPS.md](STEPS.md)**
 
@@ -9,4 +9,4 @@ cd c:\Users\admin\Desktop\grafana\Day-2\labs\lab-1
 docker compose up -d --build
 ```
 
-Optional: this folder’s Compose provisions a sample `Day 2 - Service Health` dashboard — stop Lab 1 first if ports conflict.
+Optional: this folder’s Compose provisions a sample `Day 2 - Service Health` dashboard - stop Lab 1 first if ports conflict.

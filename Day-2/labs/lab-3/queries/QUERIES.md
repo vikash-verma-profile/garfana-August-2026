@@ -1,4 +1,4 @@
-# Lab 3 — ready-to-paste queries
+# Lab 3 - ready-to-paste queries
 
 ## Prometheus
 
@@ -50,7 +50,7 @@ ORDER BY amount DESC
 LIMIT 10;
 ```
 
-### Geomap — orders by region
+### Geomap - orders by region
 ```sql
 SELECT
   r.latitude,

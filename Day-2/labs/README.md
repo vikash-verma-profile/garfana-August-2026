@@ -1,4 +1,4 @@
-# Day 2 Labs — Data Sources & Dashboard Development
+# Day 2 Labs - Data Sources & Dashboard Development
 
 Hands-on labs aligned to **Day-2.pptx** (Modules 5–8).
 
@@ -23,9 +23,9 @@ Four cycles: teach → check → build (~55 minutes each).
 
 ## Suggested order
 
-1. **Lab 1** — stand up the stack; wire Prometheus, PostgreSQL, Loki; prove each returns data  
-2. **Lab 2** — build `Day 2 - Service Health` with variables and five panel types  
-3. **Lab 3** — build `Host Health` with six+ panel types and a library panel  
+1. **Lab 1** - stand up the stack; wire Prometheus, PostgreSQL, Loki; prove each returns data  
+2. **Lab 2** - build `Day 2 - Service Health` with variables and five panel types  
+3. **Lab 3** - build `Host Health` with six+ panel types and a library panel  
 4. Before Day 3, confirm you can:
    - Open Prometheus Targets and see `node` / `demo-api` UP  
    - Run `{job="node"}` in Explore (Loki)  
@@ -47,7 +47,7 @@ docker compose up -d --build
 
 Then follow [lab-1/STEPS.md](lab-1/STEPS.md).
 
-Labs 2 and 3 reuse the **same** Lab 1 stack — do not start a second Compose unless you stop Lab 1 first.
+Labs 2 and 3 reuse the **same** Lab 1 stack - do not start a second Compose unless you stop Lab 1 first.
 
 ---
 

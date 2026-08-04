@@ -1,4 +1,4 @@
-# Lab 1 — Data Sources (Prometheus, PostgreSQL, Loki)
+# Lab 1 - Data Sources (Prometheus, PostgreSQL, Loki)
 
 Start here: **[STEPS.md](STEPS.md)**
 

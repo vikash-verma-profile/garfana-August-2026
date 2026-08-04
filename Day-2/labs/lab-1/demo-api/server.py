@@ -2,8 +2,8 @@
 """Minimal demo API for Day 2 labs.
 
 Exposes:
-  GET /          — increments counters/histograms and returns JSON
-  GET /metrics   — Prometheus text exposition (counters + histogram)
+  GET /          - increments counters/histograms and returns JSON
+  GET /metrics   - Prometheus text exposition (counters + histogram)
 """
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer

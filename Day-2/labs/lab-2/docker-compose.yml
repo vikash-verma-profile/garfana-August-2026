@@ -1,4 +1,4 @@
-# Optional Lab 2 stack — same core services as Lab 1 + provisioned sample dashboard.
+# Optional Lab 2 stack - same core services as Lab 1 + provisioned sample dashboard.
 # Prefer Lab 1 stack for the full Day 2 environment (includes Loki + demo-api).
 # Stop Lab 1 first: cd ../lab-1 && docker compose down
 services:

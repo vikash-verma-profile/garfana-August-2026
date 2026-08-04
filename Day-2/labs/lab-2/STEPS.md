@@ -1,8 +1,8 @@
-# Lab 2 — Service Health Dashboard (Variables & Panels)
+# Lab 2 - Service Health Dashboard (Variables & Panels)
 
-**Course:** Grafana Monitoring & Observability — Day 2  
+**Course:** Grafana Monitoring & Observability - Day 2  
 **Modules:** Prometheus Integration (build) + start of Dashboard Creation  
-**Source:** Day-2.pptx — Hands-on Lab 2 (slides 21–23)  
+**Source:** Day-2.pptx - Hands-on Lab 2 (slides 21–23)  
 **Duration:** ~30–45 minutes  
 **Depends on:** [Lab 1](../lab-1/STEPS.md) stack running
 
@@ -31,7 +31,7 @@ docker compose up -d --build
 
 | Access | Value |
 |---|---|
-| Grafana | http://localhost:3000 — `admin` / `admin` |
+| Grafana | http://localhost:3000 - `admin` / `admin` |
 | Prometheus | http://localhost:9090 |
 | PostgreSQL | `postgres:5432` / db `demo` / user `grafana` / password `grafana` |
 
@@ -46,11 +46,11 @@ Browser → Grafana :3000
             └── PostgreSQL → :5432 (demo)
 ```
 
-Grafana also queries PostgreSQL directly for business panels — two data sources, one dashboard.
+Grafana also queries PostgreSQL directly for business panels - two data sources, one dashboard.
 
 ---
 
-## Step 1 — Task 1: Configure Prometheus
+## Step 1 - Task 1: Configure Prometheus
 
 > Checkpoint: Prometheus API queried successfully
 
@@ -61,7 +61,7 @@ Grafana also queries PostgreSQL directly for business panels — two data source
 
 ---
 
-## Step 2 — Task 2: Configure PostgreSQL
+## Step 2 - Task 2: Configure PostgreSQL
 
 > Checkpoint: database connection OK
 
@@ -77,7 +77,7 @@ Grafana also queries PostgreSQL directly for business panels — two data source
 
 ---
 
-## Step 3 — Task 3: Create the dashboard
+## Step 3 - Task 3: Create the dashboard
 
 > Checkpoint: dashboard listed in Training folder
 
@@ -92,13 +92,13 @@ Grafana also queries PostgreSQL directly for business panels — two data source
 
 ---
 
-## Step 4 — Task 4: Add variables
+## Step 4 - Task 4: Add variables
 
 > Checkpoint: `instance` dropdown lists your targets
 
 Open **Settings → Variables → Add variable**.
 
-### Variable A — `instance` (Query)
+### Variable A - `instance` (Query)
 
 | Setting | Value |
 |---|---|
@@ -110,7 +110,7 @@ Open **Settings → Variables → Add variable**.
 | Multi-value | On |
 | Include All option | On |
 
-### Variable B — `interval` (Interval)
+### Variable B - `interval` (Interval)
 
 | Setting | Value |
 |---|---|
@@ -124,11 +124,11 @@ Save the dashboard.
 
 ---
 
-## Step 5 — Task 5: Add the panels
+## Step 5 - Task 5: Add the panels
 
 > Checkpoint: all five panels render, no errors
 
-### 5a — Row: Overview — Stat (`up`)
+### 5a - Row: Overview - Stat (`up`)
 
 1. **Add → Row** → title `Overview`
 2. **Add → Visualization** → Prometheus
@@ -144,7 +144,7 @@ up{job="node", instance=~"$instance"}
 7. Thresholds: Red below 1, Green at/above 1
 8. Apply
 
-### 5b — Time series: CPU busy %
+### 5b - Time series: CPU busy %
 
 ```promql
 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle", instance=~"$instance"}[$__rate_interval])) * 100)
@@ -159,7 +159,7 @@ up{job="node", instance=~"$instance"}
 
 > Prefer `$__rate_interval` over a hardcoded `[5m]` so zoom adapts.
 
-### 5c — Gauge: Memory available %
+### 5c - Gauge: Memory available %
 
 ```promql
 100 * (node_memory_MemAvailable_bytes{instance=~"$instance"} / node_memory_MemTotal_bytes{instance=~"$instance"})
@@ -172,7 +172,7 @@ up{job="node", instance=~"$instance"}
 | Unit | Percent (0–100) |
 | Thresholds | Red &lt; 10, Orange &lt; 25, Green ≥ 25 |
 
-### 5d — Bar gauge: CPU by instance
+### 5d - Bar gauge: CPU by instance
 
 Use the same CPU busy expression as 5b.
 
@@ -183,10 +183,10 @@ Use the same CPU busy expression as 5b.
 | Orientation | Horizontal |
 | Calculation | Last / Mean |
 
-### 5e — Row: Database — SQL Table
+### 5e - Row: Database - SQL Table
 
 1. **Add → Row** → title `Database`
-2. Add visualization — data source **PostgreSQL**, Format as **Table**
+2. Add visualization - data source **PostgreSQL**, Format as **Table**
 
 ```sql
 SELECT
@@ -220,22 +220,22 @@ ORDER BY 1;
 
 ---
 
-## Step 6 — Polish layout
+## Step 6 - Polish layout
 
 1. Drag panels so Overview holds Stat / Time series / Gauge / Bar gauge
 2. Database row holds the SQL table
-3. Collapse the Database row — collapsed rows pause their queries (Module 7)
+3. Collapse the Database row - collapsed rows pause their queries (Module 7)
 4. Change `instance` (if multiple) and confirm every PromQL panel updates
 5. Save with message: `Day2 lab panels complete`
 
 ---
 
-## Step 7 — Export JSON (homework bridge)
+## Step 7 - Export JSON (homework bridge)
 
 1. Share / Export → **Export** → Save to file  
    Optional: tick **Export for sharing externally**
 2. Keep the file for Day 3 / Day 4 provisioning practice
-3. Optional: **Dashboard settings → JSON Model** — find `templating` and `panels`
+3. Optional: **Dashboard settings → JSON Model** - find `templating` and `panels`
 
 ---
 
@@ -281,4 +281,4 @@ ORDER BY 1;
 
 ## Next lab
 
-Continue with **[Lab 3 — Host Health Visualizations](../lab-3/STEPS.md)**.
+Continue with **[Lab 3 - Host Health Visualizations](../lab-3/STEPS.md)**.

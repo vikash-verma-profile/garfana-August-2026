@@ -1,8 +1,8 @@
-# Lab 3 — Host Health Dashboard (Visualizations & Library Panels)
+# Lab 3 - Host Health Dashboard (Visualizations & Library Panels)
 
-**Course:** Grafana Monitoring & Observability — Day 2  
+**Course:** Grafana Monitoring & Observability - Day 2  
 **Modules:** Dashboard Creation + Visualization Panels  
-**Source:** Day-2.pptx — Hands-on Lab 3 (slides 36–37)  
+**Source:** Day-2.pptx - Hands-on Lab 3 (slides 36–37)  
 **Duration:** ~30–45 minutes  
 **Depends on:** [Lab 1](../lab-1/STEPS.md) stack running (data sources from Labs 1–2)
 
@@ -29,7 +29,7 @@ docker compose ps
 docker compose up -d --build
 ```
 
-Login: [http://localhost:3000](http://localhost:3000) — `admin` / `admin`
+Login: [http://localhost:3000](http://localhost:3000) - `admin` / `admin`
 
 Confirm data sources from Lab 1 still Save & test: **Prometheus**, **PostgreSQL** (Loki optional here).
 
@@ -57,7 +57,7 @@ Set on every panel: **unit**, **decimals**, **thresholds**, readable legend.
 
 ---
 
-## Step 1 — Task 1: Lay out the board
+## Step 1 - Task 1: Lay out the board
 
 > Checkpoint: both rows collapse cleanly
 
@@ -76,7 +76,7 @@ Set on every panel: **unit**, **decimals**, **thresholds**, readable legend.
 
 ---
 
-## Step 2 — Task 2: Time series panel (CPU)
+## Step 2 - Task 2: Time series panel (CPU)
 
 > Checkpoint: lines named by instance
 
@@ -99,11 +99,11 @@ Set on every panel: **unit**, **decimals**, **thresholds**, readable legend.
 
 ---
 
-## Step 3 — Task 3: Stat and Gauge
+## Step 3 - Task 3: Stat and Gauge
 
 > Checkpoint: both show live values
 
-### Stat — available memory
+### Stat - available memory
 
 ```promql
 node_memory_MemAvailable_bytes
@@ -113,11 +113,11 @@ node_memory_MemAvailable_bytes
 |---|---|
 | Visualization | Stat |
 | Title | `Memory Available` |
-| Unit | bytes (IEC) — e.g. `binB` / bytes(IEC) |
+| Unit | bytes (IEC) - e.g. `binB` / bytes(IEC) |
 | Calculation | **Last * / lastNotNull** (not Mean of nulls) |
 | Optional | sparkline On |
 
-### Gauge — disk used %
+### Gauge - disk used %
 
 ```promql
 100 - ((node_filesystem_avail_bytes{fstype!="tmpfs",mountpoint="/"} * 100) / node_filesystem_size_bytes{fstype!="tmpfs",mountpoint="/"})
@@ -129,7 +129,7 @@ node_memory_MemAvailable_bytes
 node_filesystem_avail_bytes
 ```
 
-Then adjust `mountpoint` / `device` filters. Fallback (sum across mounts — lab only):
+Then adjust `mountpoint` / `device` filters. Fallback (sum across mounts - lab only):
 
 ```promql
 100 * (1 - (sum(node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"}) / sum(node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})))
@@ -148,11 +148,11 @@ Then adjust `mountpoint` / `device` filters. Fallback (sum across mounts — lab
 
 ---
 
-## Step 4 — Task 4: Table and Bar gauge
+## Step 4 - Task 4: Table and Bar gauge
 
 > Checkpoint: table sorts and units read right
 
-### Table — top orders from PostgreSQL
+### Table - top orders from PostgreSQL
 
 Place in the **Detail** row. Data source: **PostgreSQL**, Format as **Table**:
 
@@ -176,7 +176,7 @@ LIMIT 10;
 
 Confirm column sort works in the panel.
 
-### Bar gauge — requests by instance
+### Bar gauge - requests by instance
 
 Prometheus:
 
@@ -196,11 +196,11 @@ sum by (instance) (rate(http_requests_total[5m]))
 
 ---
 
-## Step 5 — Task 5: Heatmap, Geomap, library panel
+## Step 5 - Task 5: Heatmap, Geomap, library panel
 
 > Checkpoint: library panel reused twice
 
-### Heatmap — request duration buckets
+### Heatmap - request duration buckets
 
 1. Still in **Detail**, add visualization → Prometheus
 2. Query:
@@ -211,7 +211,7 @@ sum by (le) (rate(http_request_duration_seconds_bucket[5m]))
 
 3. Visualization: **Heatmap**
 4. In query options / Heatmap settings:
-   - Format: **Time series buckets** (or Heatmap → calculate from buckets / `le` label — wording varies by Grafana version)
+   - Format: **Time series buckets** (or Heatmap → calculate from buckets / `le` label - wording varies by Grafana version)
    - If the panel asks for a histogram format, use **Heatmap** with legend `{{le}}`
 5. Title: `Request Duration Heatmap`
 6. Apply
@@ -235,9 +235,9 @@ GROUP BY 1, 2
 ORDER BY 1;
 ```
 
-Use **Time series** or **Heatmap** depending on version — the goal is seeing duration distribution over time.
+Use **Time series** or **Heatmap** depending on version - the goal is seeing duration distribution over time.
 
-### Geomap — from a latitude field
+### Geomap - from a latitude field
 
 PostgreSQL, Format as **Table**:
 
@@ -266,7 +266,7 @@ ORDER BY orders DESC;
 ### Library panel
 
 1. Open the **CPU Busy %** panel menu → **More → Create library panel**
-2. Name: `CPU Busy % (Library)` — folder `Training`
+2. Name: `CPU Busy % (Library)` - folder `Training`
 3. Create
 4. **Add → Visualization from library** (or Add panel → Library panel) and place a second copy on the board (e.g. under Detail)
 5. Confirm both show the same query; edit the library panel once and both update
@@ -275,7 +275,7 @@ ORDER BY orders DESC;
 
 ---
 
-## Step 6 — Polish and export
+## Step 6 - Polish and export
 
 1. Collapse **Detail** and confirm Overview still refreshes
 2. Verify every panel has a **title**, **unit**, and **thresholds** where relevant
@@ -288,7 +288,7 @@ ORDER BY orders DESC;
 
 - [ ] Dashboard has two collapsible rows
 - [ ] Every panel has a unit and decimals
-- [ ] Six panel types are on the board (Time series, Stat, Gauge, Table, Bar gauge, plus Heatmap **or** Geomap — aim for both)
+- [ ] Six panel types are on the board (Time series, Stat, Gauge, Table, Bar gauge, plus Heatmap **or** Geomap - aim for both)
 - [ ] One library panel is reused
 - [ ] Dashboard saved and JSON exported
 
@@ -299,7 +299,7 @@ ORDER BY orders DESC;
 Be ready to explain in your own words:
 
 1. Why Grafana never owns your metrics data  
-2. Pull vs push — which is Prometheus?  
+2. Pull vs push - which is Prometheus?  
 3. What exactly is one time series?  
 4. Cheapest way to wreck Prometheus cardinality  
 5. Why variables beat duplicate dashboards  

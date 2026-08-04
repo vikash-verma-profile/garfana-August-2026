@@ -1,4 +1,4 @@
-# Day 2 Lab 1 — Grafana + Prometheus + Loki + PostgreSQL + exporters + demo API
+# Day 2 Lab 1 - Grafana + Prometheus + Loki + PostgreSQL + exporters + demo API
 # Source: Day-2.pptx Lab 1 (Modules 5–6) + Lab 2 environment slide
 services:
   grafana:
