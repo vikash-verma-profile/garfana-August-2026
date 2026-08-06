@@ -13,8 +13,21 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_USERS_AUTO_ASSIGN_ORG=true
+      - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Viewer
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=30s
+      - GF_SERVER_ROOT=http://localhost:3000
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_AUTH_GITHUB_ENABLED=false
+      - GF_AUTH_GITHUB_CLIENT_ID=Ov23li8hUTVa1kk0NTHf
+      - GF_AUTH_GITHUB_CLIENT_SECRET=c4251d0c5528684a82fa5502adbe46162a124312
+      - GF_AUTH_GITHUB_SCOPES=user:email,read:org
+      - GF_AUTH_GITHUB_AUTH_URL=https://github.com/login/oauth/authorize
+      - GF_AUTH_GITHUB_TOKEN_URL=https://github.com/login/oauth/access_token
+      - GF_AUTH_GITHUB_API_URL=https://api.github.com/user
+      - GF_AUTH_GITHUB_ALLOW_SINGUP=true
+     
     depends_on:
       - prometheus
     restart: unless-stopped
