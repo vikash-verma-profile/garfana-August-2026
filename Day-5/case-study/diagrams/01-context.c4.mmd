@@ -1,0 +1,23 @@
+C4Context
+title ShopFront Observability Context
+
+Person(customer, "Shopper", "Browses catalog, checks out")
+Person(oncall, "On-call engineer", "Responds to alerts")
+Person(biz, "Ops / Merchandising", "Watches order KPIs")
+
+System_Boundary(sf, "ShopFront Platform") {
+  System(api, "ShopFront API", "Catalog, cart, checkout simulation")
+  SystemDb(db, "PostgreSQL", "Orders & amounts")
+  System(prom, "Prometheus", "Metrics TSDB")
+  System(gf, "Grafana", "Dashboards & Unified Alerting")
+  System(mail, "MailHog", "Lab email sink")
+}
+
+Rel(customer, api, "HTTPS /checkout")
+Rel(api, db, "SQL writes")
+Rel(prom, api, "Scrape /metrics")
+Rel(gf, prom, "PromQL")
+Rel(gf, db, "SQL panels")
+Rel(gf, mail, "Alert emails")
+Rel(oncall, gf, "Investigate")
+Rel(biz, gf, "KPI dashboards")

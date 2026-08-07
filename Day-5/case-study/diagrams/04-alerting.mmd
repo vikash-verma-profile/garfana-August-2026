@@ -1,0 +1,9 @@
+flowchart TB
+  Q[PromQL: checkout p95] --> R[Reduce → Last]
+  R --> T{"> 500ms ?"}
+  T -->|no| N[Normal]
+  T -->|yes| P[Pending]
+  P --> F[Alerting]
+  F --> Pol[Notification policy]
+  Pol --> CP[ops-email contact point]
+  CP --> MH[MailHog]

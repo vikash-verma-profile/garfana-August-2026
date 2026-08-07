@@ -99,7 +99,7 @@ That is **12 visualization types** on one board (Stat through Text).
 1. Grafana → **Dashboards** → folder **Day 3 - Lab 5**
 2. Open **Day 3 Lab 5 - Full Dashboard Gallery**
 3. Confirm time range **Last 6 hours**, refresh **30s**
-4. Click each row chevron: **Overview**, **Compute**, **Traffic**, **Business Data**, **Status & Notes** — collapse and expand
+4. Click each row chevron: **Overview**, **Compute**, **Traffic**, **Business Data**, **Status & Notes** - collapse and expand
 
 **Checkpoint:** Five named rows; collapsing one does not break the others.
 
@@ -118,10 +118,10 @@ At the top of the dashboard you should see:
 
 ### Exercises
 
-1. Set **Job** to only `demo-api` — Overview **Target Up** / timelines should shrink to that job
+1. Set **Job** to only `demo-api` - Overview **Target Up** / timelines should shrink to that job
 2. Set **Job** back to **All**
-3. Change **Interval** from `5m` → `1m` — Request Rate / Bar chart should change shape
-4. Set **Region** to `eu-west` only — **Table** and **Geomap** should show fewer points
+3. Change **Interval** from `5m` → `1m` - Request Rate / Bar chart should change shape
+4. Set **Region** to `eu-west` only - **Table** and **Geomap** should show fewer points
 5. Set **Region** back to **All**
 
 **Multi-value rule:** PromQL uses `instance=~"$instance"` and `job=~"$job"` (regex). SQL uses `region IN (${region:sqlstring})` (quoted list). Never use `=` with multi-value variables.
@@ -134,26 +134,26 @@ At the top of the dashboard you should see:
 
 Work row by row. For each panel, open the panel menu → **Edit** and note: data source, query, unit, thresholds.
 
-### Overview — Stat & Gauge
+### Overview - Stat & Gauge
 
 - **Stat**: best for “what is the value / state right now” (UP/DOWN, single KPI)
 - **Gauge**: same idea with a 0–100 (or min/max) scale and markers
 
-### Compute — Time series, Bar gauge, Histogram
+### Compute - Time series, Bar gauge, Histogram
 
 - **Time series**: how a metric changes over the time picker
 - **Bar gauge**: compare latest values across series (instances)
 - **Histogram**: distribution of values (here: network RX rates across devices)
 
-### Traffic — Heatmap, Pie, Bar chart
+### Traffic - Heatmap, Pie, Bar chart
 
 - **Heatmap**: latency buckets (`le`) over time from `http_request_duration_seconds_bucket`
 - **Pie chart**: share of HTTP status codes (instant query)
-- **Bar chart**: categorical compare — request rate by `path`
+- **Bar chart**: categorical compare - request rate by `path`
 
 If Heatmap is empty: wait for more scrapes; confirm demo-api is UP; widen time range.
 
-### Business — Table & Geomap
+### Business - Table & Geomap
 
 - **Table**: exact rows from PostgreSQL (currency unit on `amount`)
 - **Geomap**: markers from `latitude` / `longitude` / `orders`
@@ -164,7 +164,7 @@ If Geomap is blank: check PostgreSQL data source **Save & test**; confirm `regio
 docker exec -it postgres psql -U grafana -d demo -c "SELECT * FROM regions;"
 ```
 
-### Status — State timeline, Status history, Text
+### Status - State timeline, Status history, Text
 
 - **State timeline**: UP/DOWN bands over time per target
 - **Status history**: discrete status cells over time
@@ -184,7 +184,7 @@ docker exec -it postgres psql -U grafana -d demo -c "SELECT * FROM regions;"
 3. Open `region`:
    - Type: Custom
    - Values: `us-east,us-west,eu-west,ap-south`
-4. Do **not** delete variables — Cancel out or Save if you only viewed them
+4. Do **not** delete variables - Cancel out or Save if you only viewed them
 
 **Checkpoint:** You understand where variable definitions live vs where panels consume `$name`.
 
@@ -259,4 +259,4 @@ docker compose down -v
 
 ## Homework
 
-Export this dashboard JSON. Rebuild **one row** from scratch on an empty dashboard using the same variables — without looking at the provisioned JSON.
+Export this dashboard JSON. Rebuild **one row** from scratch on an empty dashboard using the same variables - without looking at the provisioned JSON.

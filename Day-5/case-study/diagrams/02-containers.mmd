@@ -1,0 +1,24 @@
+flowchart TB
+  subgraph Docker["Docker Compose · shopfront-net"]
+    GF[grafana :3000]
+    PR[prometheus :9090]
+    API[shopfront-api :8080]
+    PG[(postgres :5432)]
+    PE[postgres-exporter :9187]
+    NE[node-exporter :9100]
+    MH[mailhog :8025]
+  end
+
+  Browser((Browser)) --> GF
+  Browser --> API
+  Browser --> PR
+  Browser --> MH
+
+  PR -->|scrape /metrics| API
+  PR --> NE
+  PR --> PE
+  PE --> PG
+  API --> PG
+  GF -->|PromQL| PR
+  GF -->|SQL| PG
+  GF -->|SMTP| MH

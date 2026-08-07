@@ -21,3 +21,13 @@ If you did it twice by hand, it belongs in a file. Prefer declarative provisioni
 ## Suggested order
 
 Lab 1 (token) → Lab 2 (files) → Lab 3 (Terraform uses the token) → Lab 4 (TLS/backup) → Capstone outline.
+
+---
+
+## Final-day case study
+
+After the labs (or instead of a long capstone build), run the **ShopFront e-commerce** case study:
+
+→ [../case-study/README.md](../case-study/README.md)
+
+Includes architecture diagrams, a runnable Compose stack, RED + SQL dashboards, chaos scripts, and a checkout latency alert.

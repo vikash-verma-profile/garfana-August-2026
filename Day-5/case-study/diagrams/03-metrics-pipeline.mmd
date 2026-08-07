@@ -1,0 +1,17 @@
+sequenceDiagram
+  autonumber
+  participant App as ShopFront API
+  participant Prom as Prometheus
+  participant GF as Grafana Panel
+  participant User as Browser
+
+  loop every 15s
+    Prom->>App: GET /metrics
+    App-->>Prom: http_requests_total + histograms
+    Prom->>Prom: Store samples in TSDB
+  end
+
+  User->>GF: Open E-Commerce Overview
+  GF->>Prom: query_range PromQL
+  Prom-->>GF: vectors / matrices
+  GF-->>User: RED + business panels
