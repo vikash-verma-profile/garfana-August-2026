@@ -26,4 +26,5 @@ variable "grafana_auth" {
   type        = string
   description = "Service account token (set TF_VAR_grafana_auth or pass -var). Lab shortcut: admin:admin"
   sensitive   = true
+  default="" # add your service account
 }
